@@ -33,4 +33,10 @@
     <None Include="LICENSE" Pack="true" PackagePath="LICENSE.txt"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="geometry4Sharp.Tests\**" />
+    <EmbeddedResource Remove="geometry4Sharp.Tests\**" />
+    <None Remove="geometry4Sharp.Tests\**" />
+  </ItemGroup>
+
 </Project>
