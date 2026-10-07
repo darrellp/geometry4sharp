@@ -125,11 +125,11 @@ namespace g4
             for (int j = 0; j < 3; ++j) {
                 int eid = te[j];
                 replace_edge_triangle(eid, tID, InvalidID);
-                if (edges[4 * eid + 2] == InvalidID) {
-                    int a = edges[4 * eid];
+                if (_edges[4 * eid + 2] == InvalidID) {
+                    int a = _edges[4 * eid];
                     vertex_edges.Remove(a, eid);
 
-                    int b = edges[4 * eid + 1];
+                    int b = _edges[4 * eid + 1];
                     vertex_edges.Remove(b, eid);
 
                     edges_refcount.decrement(eid);
@@ -204,11 +204,11 @@ namespace g4
                 if (eid == -1)      // we don't need to modify this edge
                     continue;
                 replace_edge_triangle(eid, tID, InvalidID);
-                if (edges[4 * eid + 2] == InvalidID) {
-                    int a = edges[4 * eid];
+                if (_edges[4 * eid + 2] == InvalidID) {
+                    int a = _edges[4 * eid];
                     vertex_edges.Remove(a, eid);
 
-                    int b = edges[4 * eid + 1];
+                    int b = _edges[4 * eid + 1];
                     vertex_edges.Remove(b, eid);
 
                     edges_refcount.decrement(eid);
@@ -286,8 +286,8 @@ namespace g4
 
 			// look up primary edge & triangle
 			int eab_i = 4*eab;
-			int a = edges[eab_i], b = edges[eab_i + 1];
-			int t0 = edges[eab_i + 2];
+			int a = _edges[eab_i], b = _edges[eab_i + 1];
+			int t0 = _edges[eab_i + 2];
             if (t0 == InvalidID)
                 return MeshResult.Failed_BrokenTopology;
 			Index3i T0tv = GetTriangle(t0);
@@ -295,7 +295,7 @@ namespace g4
 			int c = IndexUtil.orient_tri_edge_and_find_other_vtx(ref a, ref b, T0tv_array);
             if (vertices_refcount.rawRefCount(c) > 32764)
                 return MeshResult.Failed_HitValenceLimit;
-            if (a != edges[eab_i])
+            if (a != _edges[eab_i])
                 split_t = 1.0 - split_t;    // if we flipped a/b order we need to reverse t
 
             // quite a bit of code is duplicated between boundary and non-boundary case, but it
@@ -357,7 +357,7 @@ namespace g4
 			} else {		// interior triangle branch
 				
 				// look up other triangle
-				int t1 = edges[eab_i + 3];
+				int t1 = _edges[eab_i + 3];
 				Index3i T1tv = GetTriangle(t1);
 				int[] T1tv_array = T1tv.array;
 				int d = IndexUtil.find_tri_other_vtx( a, b, T1tv_array );
@@ -464,8 +464,8 @@ namespace g4
 
 			// find oriented edge [a,b], tris t0,t1, and other verts c in t0, d in t1
 			int eab_i = 4*eab;
-			int a = edges[eab_i], b = edges[eab_i + 1];
-			int t0 = edges[eab_i + 2], t1 = edges[eab_i + 3];
+			int a = _edges[eab_i], b = _edges[eab_i + 1];
+			int t0 = _edges[eab_i + 2], t1 = _edges[eab_i + 3];
 			int[] T0tv = GetTriangle(t0).array;
 			int[] T1tv = GetTriangle(t1).array;
 			int c = IndexUtil.orient_tri_edge_and_find_other_vtx( ref a, ref b, T0tv );
@@ -576,7 +576,7 @@ namespace g4
 			if (eab == InvalidID)
 				return MeshResult.Failed_NotAnEdge;
 
-			int t0 = edges[4*eab+2];
+			int t0 = _edges[4*eab+2];
             if (t0 == InvalidID)
                 return MeshResult.Failed_BrokenTopology;
 			Index3i T0tv = GetTriangle(t0);
@@ -585,7 +585,7 @@ namespace g4
 			// look up opposing triangle/vtx if we are not in boundary case
 			bool bIsBoundaryEdge = false;
 			int d = InvalidID;
-			int t1 = edges[4*eab+3];
+			int t1 = _edges[4*eab+3];
 			if (t1 != InvalidID) {
 				Index3i T1tv = GetTriangle(t1);
 				d = IndexUtil.find_tri_other_vtx( a, b, T1tv );
@@ -628,9 +628,9 @@ namespace g4
 			if (edges_a_count == 3 && bIsBoundaryEdge == false) {
 				int edc = find_edge( d, c );
 				int edc_i = 4*edc;
-				if (edc != InvalidID && edges[edc_i+3] != InvalidID ) {
-					int edc_t0 = edges[edc_i+2];
-					int edc_t1 = edges[edc_i+3];
+				if (edc != InvalidID && _edges[edc_i+3] != InvalidID ) {
+					int edc_t0 = _edges[edc_i+2];
+					int edc_t1 = _edges[edc_i+3];
 
 				    if ( (tri_has_v(edc_t0,a) && tri_has_v(edc_t1, b)) 
 					    || (tri_has_v(edc_t0, b) && tri_has_v(edc_t1, a)) )
@@ -683,7 +683,7 @@ namespace g4
 
 				// [TODO] perhaps we can already have unique tri list because of the manifold-nbrhood check we need to do...
 				for (int j = 0; j < 2; ++j) {
-					int t_j = edges[4*eid + 2 + j];
+					int t_j = _edges[4*eid + 2 + j];
 					if (t_j != InvalidID && t_j != t0 && t_j != t1) {
 						if ( tri_has_v(t_j, a) ) {
 							if ( replace_tri_vertex(t_j, a, b) == -1 )
@@ -885,10 +885,10 @@ namespace g4
 						continue;
 					replace_edge_vertex(eid, c, a);
 					short rc = 0;
-					if (replace_tri_vertex(edges[4 * eid + 2], c, a) >= 0)
+					if (replace_tri_vertex(_edges[4 * eid + 2], c, a) >= 0)
 						rc++;
-					if (edges[4 * eid + 3] != InvalidID) {
-						if (replace_tri_vertex(edges[4 * eid + 3], c, a) >= 0)
+					if (_edges[4 * eid + 3] != InvalidID) {
+						if (replace_tri_vertex(_edges[4 * eid + 3], c, a) >= 0)
 							rc++;
 					}
                     vertex_edges.Insert(a, eid);
@@ -913,10 +913,10 @@ namespace g4
 						continue;
 					replace_edge_vertex(eid, d, b);
 					short rc = 0;
-					if (replace_tri_vertex(edges[4 * eid + 2], d, b) >= 0)
+					if (replace_tri_vertex(_edges[4 * eid + 2], d, b) >= 0)
 						rc++;
-					if (edges[4 * eid + 3] != InvalidID) {
-						if (replace_tri_vertex(edges[4 * eid + 3], d, b) >= 0)
+					if (_edges[4 * eid + 3] != InvalidID) {
+						if (replace_tri_vertex(_edges[4 * eid + 3], d, b) >= 0)
 							rc++;
 					}
                     vertex_edges.Insert(b, eid);
@@ -973,8 +973,8 @@ namespace g4
 						int vert_2 = edge_other_v(edge_2, v1);
 						if (vert_1 == vert_2 && IsBoundaryEdge(edge_2)) { // if ! boundary here, we are in deep trouble...
 							// replace edge_2 w/ edge_1 in tri, update edge and vtx-edge-nbr lists
-							int tri_1 = edges[4 * edge_1 + 2];
-							int tri_2 = edges[4 * edge_2 + 2];
+							int tri_1 = _edges[4 * edge_1 + 2];
+							int tri_2 = _edges[4 * edge_2 + 2];
 							replace_triangle_edge(tri_2, edge_2, edge_1);
 							set_edge_triangles(edge_1, tri_1, tri_2);
                             vertex_edges.Remove(v1, edge_2);
@@ -1098,10 +1098,10 @@ namespace g4
             }
             int eid = edges_refcount.allocate();
 			int i = 4*eid;
-            edges.insert(vA, i);
-            edges.insert(vB, i + 1);
-            edges.insert(tA, i + 2);
-            edges.insert(tB, i + 3);
+            _edges.insert(vA, i);
+            _edges.insert(vB, i + 1);
+            _edges.insert(tA, i + 2);
+            _edges.insert(tB, i + 3);
 
             vertex_edges.Insert(vA, eid);
             vertex_edges.Insert(vB, eid);
@@ -1151,25 +1151,25 @@ namespace g4
 
         void set_edge_vertices(int eID, int a, int b) {
 			int i = 4*eID;
-			edges[i] = Math.Min(a,b);
-			edges[i + 1] = Math.Max(a,b);
+			_edges[i] = Math.Min(a,b);
+			_edges[i + 1] = Math.Max(a,b);
 		}
 		void set_edge_triangles(int eID, int t0, int t1) {
 			int i = 4*eID;
-			edges[i + 2] = t0;
-			edges[i + 3] = t1;
+			_edges[i + 2] = t0;
+			_edges[i + 3] = t1;
 		}
 
 		int replace_edge_vertex(int eID, int vOld, int vNew) {
 			int i = 4*eID;
-			int a = edges[i], b = edges[i+1];
+			int a = _edges[i], b = _edges[i+1];
 			if ( a == vOld ) {
-				edges[i] = Math.Min(b, vNew);
-				edges[i+1] = Math.Max(b, vNew);
+				_edges[i] = Math.Min(b, vNew);
+				_edges[i+1] = Math.Max(b, vNew);
 				return 0;
 			} else if ( b == vOld ) {
-				edges[i] = Math.Min(a, vNew);
-				edges[i+1] = Math.Max(a, vNew);
+				_edges[i] = Math.Min(a, vNew);
+				_edges[i+1] = Math.Max(a, vNew);
 				return 1;				
 			} else
 				return -1;
@@ -1178,16 +1178,16 @@ namespace g4
 
 		int replace_edge_triangle(int eID, int tOld, int tNew) {
 			int i = 4*eID;
-			int a = edges[i+2], b = edges[i+3];
+			int a = _edges[i+2], b = _edges[i+3];
 			if ( a == tOld ) {
 				if ( tNew == InvalidID ) {
-					edges[i+2] = b;
-					edges[i+3] = InvalidID;
+					_edges[i+2] = b;
+					_edges[i+3] = InvalidID;
 				} else 
-					edges[i+2] = tNew;
+					_edges[i+2] = tNew;
 				return 0;
 			} else if ( b == tOld ) {
-				edges[i+3] = tNew;
+				_edges[i+3] = tNew;
 				return 1;				
 			} else
 				return -1;

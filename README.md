@@ -1,5 +1,8 @@
 # geometry4Sharp
 
+This is my fork of geometry4Sharp, which is a C# library for geometric computing. It is a port of the C++ library geometry3Sharp, which was originally developed by Ryan Schmidt.
+It's main purpose is just experimentation, adding a Test project and refactoring some of the code to make it more readable and maintainable (IMHO).
+
 Open-Source (Boost-license) C# library for geometric computing. 
 
 geometry4Sharp is a fork of geometry3sharp
