@@ -234,7 +234,7 @@ namespace g4
             int i = 3 * tID;
             for (int j = 0; j < 3; ++j) {
                 if (newv[j] != tv[j]) {
-                    triangles[i + j] = newv[j];
+                    _triangles[i + j] = newv[j];
                     vertices_refcount.increment(newv[j]);
                 }
             }
@@ -321,8 +321,8 @@ namespace g4
 
 				// add new second triangle
 				int t2 = add_triangle_only(f,b,c, InvalidID, InvalidID, InvalidID);
-				if ( triangle_groups != null )
-					triangle_groups.insert(triangle_groups[t0], t2);
+				if ( _triangle_groups != null )
+					_triangle_groups.insert(_triangle_groups[t0], t2);
 
 				// rewrite edge bc, create edge af
 				replace_edge_triangle(ebc, t0, t2);
@@ -388,9 +388,9 @@ namespace g4
 				// add two new triangles to close holes we just created
 				int t2 = add_triangle_only(f,b,c, InvalidID, InvalidID, InvalidID);
 				int t3 = add_triangle_only(f, d, b, InvalidID, InvalidID, InvalidID);
-				if ( triangle_groups != null ) {
-					triangle_groups.insert(triangle_groups[t0], t2);
-					triangle_groups.insert(triangle_groups[t1], t3);
+				if ( _triangle_groups != null ) {
+					_triangle_groups.insert(_triangle_groups[t0], t2);
+					_triangle_groups.insert(_triangle_groups[t1], t3);
 				}
 
 				// update the edges we found above, to point to new triangles
@@ -1056,9 +1056,9 @@ namespace g4
 
             // transfer groups
             if ( HasTriangleGroups ) {
-                int g = triangle_groups[tid];
-                triangle_groups.insert(g, t1);
-                triangle_groups.insert(g, t2);
+                int g = _triangle_groups[tid];
+                _triangle_groups.insert(g, t1);
+                _triangle_groups.insert(g, t2);
             }
 
             result.new_vid = center;
@@ -1079,16 +1079,16 @@ namespace g4
         void set_triangle(int tid, int v0, int v1, int v2)
         {
 			int i = 3*tid;
-            triangles[i] = v0;
-            triangles[i + 1] = v1;
-            triangles[i + 2] = v2;
+            _triangles[i] = v0;
+            _triangles[i + 1] = v1;
+            _triangles[i + 2] = v2;
         }
         void set_triangle_edges(int tid, int e0, int e1, int e2)
         {
 			int i = 3*tid;
-            triangle_edges[i] = e0;
-            triangle_edges[i + 1] = e1;
-            triangle_edges[i + 2] = e2;
+            _triangle_edges[i] = e0;
+            _triangle_edges[i + 1] = e1;
+            _triangle_edges[i + 2] = e2;
         }
 
         int add_edge(int vA, int vB, int tA, int tB = InvalidID)
@@ -1110,21 +1110,21 @@ namespace g4
 
 		int replace_tri_vertex(int tID, int vOld, int vNew) {
 			int i = 3*tID;
-			if ( triangles[i] == vOld ) { triangles[i] = vNew; return 0; }
-			if ( triangles[i+1] == vOld ) { triangles[i+1] = vNew; return 1; }
-			if ( triangles[i+2] == vOld ) { triangles[i+2] = vNew; return 2; }
+			if ( _triangles[i] == vOld ) { _triangles[i] = vNew; return 0; }
+			if ( _triangles[i+1] == vOld ) { _triangles[i+1] = vNew; return 1; }
+			if ( _triangles[i+2] == vOld ) { _triangles[i+2] = vNew; return 2; }
 			return -1;
 		}
 
 		int add_triangle_only(int a, int b, int c, int e0, int e1, int e2) {
 			int tid = triangles_refcount.allocate();
 			int i = 3*tid;
-			triangles.insert(c, i + 2);
-			triangles.insert(b, i + 1);
-			triangles.insert(a, i);
-			triangle_edges.insert(e2, i+2);
-			triangle_edges.insert(e1, i+1);
-			triangle_edges.insert(e0, i+0);	
+			_triangles.insert(c, i + 2);
+			_triangles.insert(b, i + 1);
+			_triangles.insert(a, i);
+			_triangle_edges.insert(e2, i+2);
+			_triangle_edges.insert(e1, i+1);
+			_triangle_edges.insert(e0, i+0);	
 			return tid;
 		}
 
@@ -1195,14 +1195,14 @@ namespace g4
 
 		int replace_triangle_edge(int tID, int eOld, int eNew) {
 			int i = 3*tID;
-			if ( triangle_edges[i] == eOld ) {
-				triangle_edges[i] = eNew;
+			if ( _triangle_edges[i] == eOld ) {
+				_triangle_edges[i] = eNew;
 				return 0;
-			} else if ( triangle_edges[i+1] == eOld ) {
-				triangle_edges[i+1] = eNew;
+			} else if ( _triangle_edges[i+1] == eOld ) {
+				_triangle_edges[i+1] = eNew;
 				return 1;
-			} else if ( triangle_edges[i+2] == eOld ) {
-				triangle_edges[i+2] = eNew;
+			} else if ( _triangle_edges[i+2] == eOld ) {
+				_triangle_edges[i+2] = eNew;
 				return 2;
 			} else
 				return -1;

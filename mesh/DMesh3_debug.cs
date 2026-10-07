@@ -175,8 +175,8 @@ namespace g4
 				CheckOrFailF(colors.size == vertices.size);
 			if ( uv != null )
 				CheckOrFailF(uv.size/2 == vertices.size/3);
-			if ( triangle_groups != null )
-				CheckOrFailF(triangle_groups.size == triangles.size/3);
+			if ( _triangle_groups != null )
+				CheckOrFailF(_triangle_groups.size == _triangles.size/3);
 
             foreach (int tID in TriangleIndices() ) { 
 
